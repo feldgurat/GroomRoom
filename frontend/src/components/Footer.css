@@ -1,0 +1,16 @@
+.footer {
+  width: 100%;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.footer-inner {
+  width: min(1100px, calc(100% - 32px));
+  margin: 0 auto;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 14px;
+}

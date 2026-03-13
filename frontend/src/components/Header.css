@@ -1,0 +1,26 @@
+.header {
+  width: 100%;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.nav {
+  width: min(1100px, calc(100% - 32px));
+  margin: 0 auto;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #111827;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.nav-link:hover {
+  background: #f3f4f6;
+}
