@@ -10,6 +10,18 @@ from services.UserServ import UserServiceDep
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 
+@router.get(
+    "/all-orders",
+    response_model=list[OrderOut],
+    summary="Все заявки (администратор)",
+)
+async def all_orders(
+    _admin: CurrentAdminDep,
+    order_serv: OrderServiceDep,
+) -> list[OrderOut]:
+    return await order_serv.get_all_orders()
+
+
 @router.post(
     "/orders/{order_id}/start-processing",
     response_model=OrderOut,

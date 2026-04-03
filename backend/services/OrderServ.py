@@ -66,6 +66,10 @@ class OrderService:
         """Публичный список завершённых заявок (для главной страницы)."""
         return await self.orderRepo.get_completed(limit)
 
+    async def get_all_orders(self) -> list[Order]:
+        """Все заявки (для администратора)."""
+        return await self.orderRepo.get_all()
+
     async def get_my_orders(self, user_id: UUID) -> list[Order]:
         """Список заявок текущего пользователя."""
         return await self.orderRepo.get_by_user_id(user_id)

@@ -1,14 +1,61 @@
-* {
-  box-sizing: border-box;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-cream text-mocha-dark font-body antialiased;
+    min-height: 100dvh;
+  }
+  ::selection { @apply bg-rose/30 text-mocha-dark; }
 }
 
-html, body, #root {
-  height: 100%;
-  margin: 0;
+@layer components {
+  .btn-primary {
+    @apply bg-rose text-white font-semibold px-6 py-3 rounded-2xl
+      transition-all duration-300 hover:bg-rose-dark hover:shadow-lg
+      hover:shadow-rose/25 active:scale-[0.97] disabled:opacity-50
+      disabled:cursor-not-allowed disabled:hover:shadow-none;
+  }
+  .btn-secondary {
+    @apply bg-white/80 backdrop-blur text-mocha font-semibold px-6 py-3
+      rounded-2xl border border-sand transition-all duration-300
+      hover:bg-white hover:shadow-md active:scale-[0.97];
+  }
+  .btn-sage {
+    @apply bg-sage text-white font-semibold px-5 py-2.5 rounded-xl
+      transition-all duration-300 hover:bg-sage-dark active:scale-[0.97];
+  }
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl bg-white/70 backdrop-blur
+      border border-sand/80 text-mocha-dark placeholder-mocha/40
+      transition-all duration-300 outline-none
+      focus:border-rose focus:ring-2 focus:ring-rose/20 focus:bg-white;
+  }
+  .input-error {
+    @apply border-red-400 ring-2 ring-red-100 bg-red-50/50;
+  }
+  .card {
+    @apply bg-white/70 backdrop-blur-sm rounded-3xl border border-sand/50
+      shadow-sm transition-all duration-300 hover:shadow-md overflow-hidden;
+  }
+  .glass {
+    @apply bg-white/60 backdrop-blur-md border border-white/40;
+  }
 }
 
-body {
-  font-family: Arial, sans-serif;
-  background: #f7f7f8;
-  color: #1f2937;
-}
+/* Animations */
+@keyframes fadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95) } to { opacity: 1; transform: scale(1) } }
+
+.animate-fade-in  { animation: fadeIn  .5s ease-out forwards }
+.animate-slide-up { animation: slideUp .5s ease-out forwards }
+.animate-scale-in { animation: scaleIn .3s ease-out forwards }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px }
+::-webkit-scrollbar-track { background: transparent }
+::-webkit-scrollbar-thumb { background: #d4a69a80; border-radius: 999px }
+::-webkit-scrollbar-thumb:hover { background: #D4A69A }

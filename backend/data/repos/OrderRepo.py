@@ -21,6 +21,11 @@ class OrderRepository(BaseRepository[Order]):
         result = await self.session.exec(stmt)
         return list(result.all())
 
+    async def get_all(self) -> list[Order]:
+        stmt = select(Order).order_by(Order.created_at.desc())  # type: ignore[union-attr]
+        result = await self.session.exec(stmt)
+        return list(result.all())
+
     async def get_by_user_id(self, user_id: UUID) -> list[Order]:
         stmt = (
             select(Order)
