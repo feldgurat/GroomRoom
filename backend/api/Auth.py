@@ -1,28 +1,53 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from datetime import timedelta
 
-from data.schemas.User import UserCreate, UserRead, UserLogin
-from services.AuthServ import AuthService, get_auth_service
+from fastapi import APIRouter, HTTPException, status
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+from api.dependences import CurrentUserDep
+from data.schemas.Auth import LoginPayload, RegisterPayload, Token
+from data.schemas.User import UserOut
+from services.AuthServ import AuthServiceDep
+from services.UserServ import UserServiceDep
+
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/api/auth/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 async def register(
-    payload: UserCreate,
-    service: AuthService = Depends(get_auth_service),
+    payload: RegisterPayload,
+    service: UserServiceDep,
 ):
-    try:
-        return await service.register(payload)
-    except ValueError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+    user = await service.create(payload)
+    await service.session.commit()
+    return user
 
+@router.post("/login", response_model=Token)
+async def login(
+    payload: LoginPayload,
+    service: AuthServiceDep,
+):
+    data = payload.model_dump()
+    user = await service.authenticate_user(data["login"], data['password'])
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-# @router.post("/login", response_model=TokenPair)
-# async def login(
-#     payload: UserLogin,
-#     service: AuthService = Depends(get_auth_service),
-# ):
-#     tokens = await service.login(payload.login_or_email, payload.password)
-#     if not tokens:
-#         raise HTTPException(status_code=401, detail="Неверный логин или пароль")
-#     return tokens
+    access_token = await service.create_access_token(
+        data={"sub": user.login, "ver": user.token_version},
+        expires_delta=timedelta(minutes=15)
+    )
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
+
+@router.post("/logout")
+async def logout(
+    current_user: CurrentUserDep,
+    service: AuthServiceDep,
+):
+    await service.inc_token_version(current_user)
+    await service.session.commit()
+    return {"status": "ok"}

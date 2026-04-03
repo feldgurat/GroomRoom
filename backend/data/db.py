@@ -2,15 +2,17 @@ from collections.abc import AsyncGenerator
 from typing import Annotated
 
 from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlmodel import SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+
+from data.models.Order import Order  # noqa: F401
+from data.models.User import User  # noqa: F401
 
 DATABASE_URL = "sqlite+aiosqlite:///./groomroom.db"
 
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=False,
-)
+engine = create_async_engine(DATABASE_URL, echo=False)
 
 SessionLocal = async_sessionmaker(
     bind=engine,
@@ -23,6 +25,7 @@ async def init_db() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
 
+
 async def close_db() -> None:
     await engine.dispose()
 
@@ -30,6 +33,6 @@ async def close_db() -> None:
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     async with SessionLocal() as session:
         yield session
-    session.close()
+
 
 SessionDep = Annotated[AsyncSession, Depends(get_session)]

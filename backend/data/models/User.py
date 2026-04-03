@@ -1,8 +1,9 @@
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
-from sqlmodel import Field, SQLModel, Relationship
 from enum import Enum
 from datetime import datetime, timezone
+
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from data.models.Order import Order
@@ -16,13 +17,23 @@ class Role(str, Enum):
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
+
     id: UUID = Field(default_factory=uuid4, primary_key=True, index=True)
     name: str = Field(max_length=255)
     login: str = Field(index=True, unique=True, max_length=255)
     email: str = Field(index=True, unique=True, max_length=255)
-    password_hash: str = Field()
+    password_hash: str
+
+    token_version: int = Field(default=0)
 
     role: Role = Field(default=Role.user, index=True)
-    orders: list["Order"] = Relationship(back_populates="user")
 
-    created_at: datetime = Field(default_factory=now_time)
+    orders: list["Order"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={
+            "cascade": "all, delete-orphan",
+            "passive_deletes": True,
+        }
+    )
+
+    created_at: datetime = Field(default_factory=now_time, index=True)
