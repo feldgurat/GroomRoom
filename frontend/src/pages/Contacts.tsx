@@ -2,7 +2,7 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 export default function Contacts() {
   return (
-    <div className="animate-fade-in py-6">
+    <div className="animate-fade-in py-6 max-w-5xl mx-auto px-4">
       <h1 className="font-display text-3xl font-bold text-mocha-dark mb-3">Контакты</h1>
       <p className="text-mocha/70 text-lg mb-8">Будем рады видеть вас и ваших питомцев!</p>
 

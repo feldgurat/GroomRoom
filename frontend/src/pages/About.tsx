@@ -2,7 +2,7 @@ import { Heart, Scissors, Sparkles, Clock } from 'lucide-react';
 
 export default function About() {
   return (
-    <div className="animate-fade-in py-6">
+    <div className="animate-fade-in py-6 max-w-5xl mx-auto px-4">
       <h1 className="font-display text-3xl font-bold text-mocha-dark mb-3">О нас</h1>
       <p className="text-mocha/70 text-lg leading-relaxed max-w-2xl mb-10">
         GroomRoom — это профессиональный груминг-салон, где каждый питомец получает

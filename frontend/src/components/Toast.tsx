@@ -16,7 +16,7 @@ export default function Toast({ message, type = 'error', onClose }: Props) {
   const err = type === 'error';
 
   return (
-    <div className="fixed top-4 right-4 z-[100] animate-slide-up max-w-sm w-full pointer-events-auto">
+    <div className="fixed top-20 right-4 z-[100] animate-slide-up max-w-sm w-full pointer-events-auto">
       <div
         className={`flex items-start gap-3 px-4 py-3 rounded-2xl shadow-lg border ${
           err ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'

@@ -34,7 +34,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in max-w-5xl mx-auto px-4">
       {toast && <Toast message={toast.msg} type={toast.type} onClose={() => setToast(null)} />}
 
       {/* Welcome */}

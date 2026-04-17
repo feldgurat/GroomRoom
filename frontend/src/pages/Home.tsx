@@ -11,14 +11,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in max-w-5xl mx-auto px-4">
       {/* Hero */}
-      <section className="relative py-8 lg:py-14">
-        {/* Decorative blobs */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden -z-10">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-rose/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 -left-20 w-96 h-96 bg-sage/10 rounded-full blur-3xl" />
-        </div>
+      <section className="py-8 lg:py-14">
 
         <div className="flex items-center gap-2 mb-5">
           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-rose/10 rounded-full">
