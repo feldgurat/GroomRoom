@@ -46,7 +46,6 @@ async def get_current_user(
     user = await user_service.userRepo.get_by_login(login)
     if user is None:
         raise credentials_exception
-    # Проверяем версию токена (инвалидация после logout)
     if payload.get("ver") != user.token_version:
         raise credentials_exception
 
@@ -57,7 +56,6 @@ CurrentUserDep = Annotated[User, Depends(get_current_user)]
 
 
 async def get_current_admin(current_user: CurrentUserDep) -> User:
-    # Исправлено: было `is Role.admin` (инвертированная логика)
     if current_user.role is not Role.admin:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

@@ -11,29 +11,25 @@ from data.models.Order import Order, OrderStatus
 from data.repos.OrderRepo import OrderRepository
 from data.schemas.Order import DeleteAnswer
 
-# ─── константы ────────────────────────────────────────────────────────────────
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/bmp"}
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".bmp"}
 MAX_PHOTO_SIZE = 2 * 1024 * 1024  # 2 МБ
 
 UPLOAD_DIR = Path("uploads")
 RESULT_DIR = UPLOAD_DIR / "result"
+SOURCE_DIR = UPLOAD_DIR / "source"
 
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+SOURCE_DIR.mkdir(parents=True, exist_ok=True)
 RESULT_DIR.mkdir(parents=True, exist_ok=True)
 
 
-# ─── вспомогательная функция ──────────────────────────────────────────────────
 async def _save_photo(upload: UploadFile, dest_dir: Path) -> str:
-    """Валидирует и сохраняет загружаемый файл. Возвращает относительный путь."""
-    # Проверяем MIME-тип
     if upload.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Допустимые форматы: JPEG, BMP",
         )
 
-    # Проверяем расширение
     suffix = Path(upload.filename or "").suffix.lower()
     if suffix not in ALLOWED_EXTENSIONS:
         raise HTTPException(
@@ -41,7 +37,6 @@ async def _save_photo(upload: UploadFile, dest_dir: Path) -> str:
             detail="Допустимые расширения: .jpg, .jpeg, .bmp",
         )
 
-    # Читаем содержимое и проверяем размер
     content = await upload.read()
     if len(content) > MAX_PHOTO_SIZE:
         raise HTTPException(
@@ -56,29 +51,24 @@ async def _save_photo(upload: UploadFile, dest_dir: Path) -> str:
     return str(file_path)
 
 
-# ─── сервис ───────────────────────────────────────────────────────────────────
 class OrderService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
         self.orderRepo = OrderRepository(session)
 
     async def get_completed_orders(self, limit: int = 4) -> list[Order]:
-        """Публичный список завершённых заявок (для главной страницы)."""
         return await self.orderRepo.get_completed(limit)
 
     async def get_all_orders(self) -> list[Order]:
-        """Все заявки (для администратора)."""
         return await self.orderRepo.get_all()
 
     async def get_my_orders(self, user_id: UUID) -> list[Order]:
-        """Список заявок текущего пользователя."""
         return await self.orderRepo.get_by_user_id(user_id)
 
     async def create_order(
         self, user_id: UUID, pet_name: str, photo: UploadFile
     ) -> Order:
-        """Создать новую заявку со статусом 'Новая'."""
-        photo_path = await _save_photo(photo, UPLOAD_DIR)
+        photo_path = await _save_photo(photo, SOURCE_DIR)
 
         order = Order(
             pet_name=pet_name,
@@ -92,10 +82,6 @@ class OrderService:
         return order
 
     async def delete_order(self, order_id: UUID, user_id: UUID) -> DeleteAnswer:
-        """
-        Удалить заявку. Разрешено только владельцу,
-        если статус заявки ещё «Новая».
-        """
         order = await self.orderRepo.get(order_id)
         if order is None:
             raise HTTPException(
@@ -117,10 +103,8 @@ class OrderService:
         await self.session.commit()
         return DeleteAnswer(status=True, messange="Заявка удалена")
 
-    # ── Административные методы ───────────────────────────────────────────────
 
     async def start_processing(self, order_id: UUID) -> Order:
-        """Администратор: «Новая» → «Обработка данных»."""
         order = await self.orderRepo.get(order_id)
         if order is None:
             raise HTTPException(
@@ -139,7 +123,6 @@ class OrderService:
         return updated
 
     async def complete_order(self, order_id: UUID, result_photo: UploadFile) -> Order:
-        """Администратор: «Обработка данных» → «Услуга оказана» + фото результата."""
         order = await self.orderRepo.get(order_id)
         if order is None:
             raise HTTPException(

@@ -15,14 +15,14 @@ class OrderRepository(BaseRepository[Order]):
         stmt = (
             select(Order)
             .where(Order.status == OrderStatus.done)
-            .order_by(Order.created_at.desc())  # type: ignore[union-attr]
+            .order_by(Order.created_at.desc())
             .limit(limit)
         )
         result = await self.session.exec(stmt)
         return list(result.all())
 
     async def get_all(self) -> list[Order]:
-        stmt = select(Order).order_by(Order.created_at.desc())  # type: ignore[union-attr]
+        stmt = select(Order).order_by(Order.created_at.desc()) 
         result = await self.session.exec(stmt)
         return list(result.all())
 
@@ -30,7 +30,7 @@ class OrderRepository(BaseRepository[Order]):
         stmt = (
             select(Order)
             .where(Order.user_id == user_id)
-            .order_by(Order.created_at.desc())  # type: ignore[union-attr]
+            .order_by(Order.created_at.desc())
         )
         result = await self.session.exec(stmt)
         return list(result.all())

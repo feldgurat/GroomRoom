@@ -7,8 +7,8 @@ from sqlmodel import SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
-from data.models.Order import Order  # noqa: F401
-from data.models.User import User  # noqa: F401
+from data.models.Order import Order
+from data.models.User import User
 
 DATABASE_URL = "sqlite+aiosqlite:///./groomroom.db"
 

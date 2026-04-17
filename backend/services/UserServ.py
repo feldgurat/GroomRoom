@@ -20,7 +20,6 @@ class UserService:
         self.userRepo = UserRepository(session)
 
     async def create(self, payload: RegisterPayload) -> User:
-        """Создать нового пользователя. Передаём только нужные поля в модель."""
         existing = await self.userRepo.get_by_login(payload.login)
         if existing is not None:
             raise HTTPException(
